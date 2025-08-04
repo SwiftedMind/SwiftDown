@@ -27,6 +27,7 @@ public struct SwiftDownEditor: UIViewRepresentable {
     private(set) var keyboardType: UIKeyboardType = .default
     private(set) var hasKeyboardToolbar: Bool = true
     private(set) var textAlignment: TextAlignment = .leading
+    private(set) var focusOnAppear: Bool = false
 
     public var onTextChange: (String) -> Void = { _ in }
     public var onSelectionChange: (NSRange) -> Void = { _ in }
@@ -60,6 +61,12 @@ public struct SwiftDownEditor: UIViewRepresentable {
       swiftDown.tintColor = theme.tintColor
       swiftDown.textColor = theme.tintColor
       swiftDown.text = text
+
+      if focusOnAppear {
+        DispatchQueue.main.async {
+          swiftDown.becomeFirstResponder()
+        }
+      }
 
       return swiftDown
     }
@@ -153,6 +160,7 @@ public struct SwiftDownEditor: UIViewRepresentable {
     private(set) var isEditable: Bool = true
     private(set) var theme: Theme = Theme.BuiltIn.defaultDark.theme()
     private(set) var insetsSize: CGFloat = 0
+    private(set) var focusOnAppear: Bool = false
 
     public var onTextChange: (String) -> Void = { _ in }
     public var onSelectionChange: (NSRange) -> Void = { _ in }
@@ -172,6 +180,13 @@ public struct SwiftDownEditor: UIViewRepresentable {
       swiftDown.delegate = context.coordinator
       swiftDown.setupTextView()
       swiftDown.text = text
+
+      if focusOnAppear {
+        DispatchQueue.main.async {
+          swiftDown.textView?.window?.makeFirstResponder(swiftDown.textView)
+        }
+      }
+
       return swiftDown
     }
 
@@ -247,4 +262,10 @@ extension SwiftDownEditor {
      editor.debounceTime = debounceTime
      return editor
    }
+
+  public func focusOnAppear(_ focusOnAppear: Bool = true) -> Self {
+    var editor = self
+    editor.focusOnAppear = focusOnAppear
+    return editor
+  }
 }
